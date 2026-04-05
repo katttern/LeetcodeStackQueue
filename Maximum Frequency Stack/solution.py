@@ -1,40 +1,29 @@
-from collections import deque
+from collections import defaultdict, deque
 
 class FreqStack:
 
     def __init__(self):
-        self.stack = deque()
+        self.freq = defaultdict(int)
+        self.group = defaultdict(deque)
+        self.max_freq = 0
 
     def push(self, val: int) -> None:
-        self.stack.append(val)
+        self.freq[val] += 1
+        f = self.freq[val]
+
+        if f > self.max_freq:
+            self.max_freq = f
+
+        self.group[f].append(val)
 
     def pop(self) -> int:
-        arr = []
+        val = self.group[self.max_freq].pop()
+        self.freq[val] -= 1
 
-        while self.stack:
-            arr.append(self.stack.pop())
+        if not self.group[self.max_freq]:
+            self.max_freq -= 1
 
-        max_freq = 0
-        chosen_index = 0
-
-        for i in range(len(arr)):
-            freq = 0
-            for j in range(len(arr)):
-                if arr[j] == arr[i]:
-                    freq += 1
-
-            if freq > max_freq:
-                max_freq = freq
-                chosen_index = i
-
-        ans = arr[chosen_index]
-
-        for i in range(len(arr) - 1, -1, -1):
-            if i == chosen_index:
-                continue
-            self.stack.append(arr[i])
-
-        return ans
+        return val
 
 
 # Your FreqStack object will be instantiated and called as such:
